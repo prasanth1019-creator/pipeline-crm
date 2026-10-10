@@ -1,0 +1,177 @@
+### Sprint 1 requests. Server: http://localhost:8080
+### Ovvoru "###" kku pakkathula green arrow irukkum.
+
+### ===== T1: Company with city =====
+GET http://localhost:8080/api/companies
+
+###
+POST http://localhost:8080/api/companies
+Content-Type: application/json
+
+{
+  "name": "Madurai Spices",
+  "industry": "Food",
+  "website": "https://madurai.example.com",
+  "city": "Madurai"
+}
+
+### ===== T2: Phone validation =====
+### Thappu phone (400 varanum)
+POST http://localhost:8080/api/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "bad.phone@example.com",
+  "phone": "12345",
+  "companyId": 1
+}
+
+###
+### Sariyaana phone (201 varanum)
+POST http://localhost:8080/api/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "good.phone@example.com",
+  "phone": "9876512345",
+  "companyId": 1
+}
+
+### ===== T3: Notes =====
+POST http://localhost:8080/api/contacts/1/notes
+Content-Type: application/json
+
+{
+  "text": "Called today. Wants a demo next week."
+}
+
+###
+GET http://localhost:8080/api/contacts/1/notes
+
+###
+### Delete (204)
+DELETE http://localhost:8080/api/notes/1
+
+###
+### Thirumba delete (404)
+DELETE http://localhost:8080/api/notes/1
+
+###
+### Illaadha contact (404)
+GET http://localhost:8080/api/contacts/999/notes
+
+### ===== T4: Dashboard =====
+GET http://localhost:8080/api/dashboard
+
+### ===== T5: Pagination =====
+GET http://localhost:8080/api/deals
+
+###
+GET http://localhost:8080/api/deals?size=2
+
+###
+GET http://localhost:8080/api/deals?size=2&page=1
+
+###
+GET http://localhost:8080/api/deals?stage=NEW
+
+###
+### size 500 ketaalum 50 ku mela povadhu
+GET http://localhost:8080/api/deals?size=500
+
+### ===== T6: Update / delete deal =====
+PUT http://localhost:8080/api/deals/1
+Content-Type: application/json
+
+{
+  "title": "Acme annual license (renewed)",
+  "amount": 300000.00
+}
+
+###
+### Negative amount (400)
+PUT http://localhost:8080/api/deals/1
+Content-Type: application/json
+
+{
+  "title": "Bad deal",
+  "amount": -5
+}
+
+###
+### Illaadha deal (404)
+PUT http://localhost:8080/api/deals/999
+Content-Type: application/json
+
+{
+  "title": "Ghost deal",
+  "amount": 100
+}
+
+###
+DELETE http://localhost:8080/api/deals/4
+
+### ===== T7: Stage rules =====
+### Deal 3 NEW la irukku. NEW > QUALIFIED (200)
+PATCH http://localhost:8080/api/deals/3/stage
+Content-Type: application/json
+
+{
+  "stage": "QUALIFIED"
+}
+
+###
+### QUALIFIED > WON (skip, 422)
+PATCH http://localhost:8080/api/deals/3/stage
+Content-Type: application/json
+
+{
+  "stage": "WON"
+}
+
+###
+### Deal 2 la irundhu LOST (200)
+PATCH http://localhost:8080/api/deals/2/stage
+Content-Type: application/json
+
+{
+  "stage": "LOST"
+}
+
+###
+### LOST deal ah thirumba maatha (422)
+PATCH http://localhost:8080/api/deals/2/stage
+Content-Type: application/json
+
+{
+  "stage": "PROPOSAL"
+}
+
+###
+### Closed deal edit (422)
+PUT http://localhost:8080/api/deals/2
+Content-Type: application/json
+
+{
+  "title": "Try edit closed deal",
+  "amount": 1
+}
+
+### ===== T9/T10: prod mode la (java -jar) =====
+### Prod la DB empty, mudhal la company create pannunga
+POST http://localhost:8080/api/companies
+Content-Type: application/json
+
+{
+  "name": "Prod Test Co",
+  "industry": "IT",
+  "website": "https://prod.example.com",
+  "city": "Tirunelveli"
+}
+
+###
+GET http://localhost:8080/api/companies
